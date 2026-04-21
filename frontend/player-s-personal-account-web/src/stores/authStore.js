@@ -37,10 +37,14 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true
       this.error = null
       try {
-        const response = await api.post('/users/login', { email, password })
+        const response = await api.post('/auth/login', { email, password })
 
-        const token = response.data.token || response.data.accessToken
-        const user = response.data.user || response.data
+                const token = response.data.token
+                const user = {
+                  id: response.data.userId,
+                  nickname: response.data.nickname,
+                  email: response.data.email
+                }
 
         if (token) {
           this.token = token
@@ -69,7 +73,7 @@ export const useAuthStore = defineStore('auth', {
     async fetchProfile() {
        if (!this.userId) return
        try {
-         const res = await api.get(`/profile/${this.userId}`)
+         const res = await api.get(`/users/${this.userId}`)
          this.user = res.data
          localStorage.setItem('user', JSON.stringify(res.data))
        } catch (e) {

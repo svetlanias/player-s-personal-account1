@@ -25,11 +25,6 @@
       <textarea v-model="form.bio" :placeholder="user.bio" rows="3" />
     </div>
 
-    <div class="form-group">
-      <label>Новый пароль (оставьте пустым, чтобы не менять)</label>
-      <input v-model="form.newPassword" type="password" placeholder="••••••" />
-    </div>
-
     <p v-if="error" class="error">{{ error }}</p>
     <p v-if="success" class="success">✅ Профиль обновлён!</p>
 
@@ -54,7 +49,12 @@ const error = ref(null)
 const success = ref(false)
 
 watch(() => props.user, (newUser) => {
-  form.value = { ...newUser, newPassword: '' }
+  form.value = {
+      nickname: newUser.nickname || '',
+      fullName: newUser.fullName || '',
+      city: newUser.city || '',
+      bio: newUser.bio || ''
+    }
 }, { immediate: true })
 
 const handleSubmit = async () => {
@@ -63,8 +63,12 @@ const handleSubmit = async () => {
   success.value = false
 
   try {
-    const payload = { ...form.value }
-    if (!payload.newPassword) delete payload.newPassword
+    const payload = {
+          nickname: form.value.nickname,
+          fullName: form.value.fullName,
+          city: form.value.city,
+          bio: form.value.bio
+        }
 
     const response = await api.put(`/users/${authStore.userId}`, payload)
 
